@@ -22,7 +22,7 @@ class Game(tk.Frame):
 
         self.mainloop()
 
-    #
+    # Crear la interfaz gráfica
 
     def crear_GUI(self):
         self.cells = []
@@ -46,11 +46,13 @@ class Game(tk.Frame):
         score_frame.place(relx=0.5, y=45, anchor="center")
         tk.Label(
             score_frame,
-            text="Score",
+            text="Puntaje",
             font=c.SCORE_LABEL_FONT
         ).grid(row=0)
         self.score_label = tk.Label(score_frame, text="0", font=c.SCORE_FONT)
         self.score_label.grid(row=1)
+
+    # Inicializar el talbero de juego y la partida
 
     def iniciar_partida(self):
         self.matriz = [[0] * 4 for _ in range (4)]
@@ -77,6 +79,8 @@ class Game(tk.Frame):
         )
 
         self.puntaje = 0
+
+    # Apilar todos los numeros hacia un lado del tablero
     
     def apilar(self):
         new_matriz = [[0] * 4 for _ in range(4)]
@@ -88,6 +92,8 @@ class Game(tk.Frame):
                     fill_position += 1
         self.matriz = new_matriz
 
+    # Sumar dos números iguales y combinarlos en la posición del primer sumando
+
     def combinar(self):
         for i in range(4):
             for j in range(3):
@@ -96,6 +102,8 @@ class Game(tk.Frame):
                    self.matriz[i][j+1] = 0
                    self.puntaje += self.matriz[i][j]
 
+    # Crear una matriz inversa a partir del tablero de juego 
+
     def inversa(self):
         new_matrix = []
         for i in range(4):
@@ -103,6 +111,8 @@ class Game(tk.Frame):
             for j in range(4):
                 new_matrix[i].append(self.matriz[i][3 - j])
         self.matriz = new_matrix
+
+    # Crear una matriz transpuesta a partir del tablero de juego
  
     def transpuesta(self):
         new_matrix = [[0] * 4 for _ in range(4)]
@@ -111,6 +121,8 @@ class Game(tk.Frame):
                 new_matrix[i][j] = self.matriz[j][i]
         self.matriz = new_matrix
 
+    # Añadir un nuevo número al tablero de juego
+
     def add_numero(self):
         row = random.randint(0, 3)
         col = random.randint(0, 3)
@@ -118,6 +130,8 @@ class Game(tk.Frame):
             row = random.randint(0, 3)
             col = random.randint(0, 3)
         self.matriz[row][col] = random.choice([2,4])
+
+    # Actualizar la intefaz gráfica de de acuerdo a los movimientos hechos
 
     def actualizar_GUI(self):
         for i in range(4):
@@ -137,6 +151,8 @@ class Game(tk.Frame):
         self.score_label.configure(text=self.puntaje)
         self.update_idletasks()
 
+    # Simular el movimiento hacia la izquierda
+
     def left(self, event):
         self.apilar()
         self.combinar()
@@ -145,6 +161,7 @@ class Game(tk.Frame):
         self.actualizar_GUI()
         self.game_over()
 
+    # Simular el movimiento hacia la derecha
 
     def right(self, event):
         self.inversa()
@@ -156,6 +173,8 @@ class Game(tk.Frame):
         self.actualizar_GUI()
         self.game_over()
 
+    # Simular el movimiento hacia arriba
+
     def up(self, event):
         self.transpuesta()
         self.apilar()
@@ -165,6 +184,8 @@ class Game(tk.Frame):
         self.add_numero()
         self.actualizar_GUI()
         self.game_over()
+
+    # Simular el movimiento hacia abajo
 
     def down(self, event):
         self.transpuesta()
@@ -178,6 +199,8 @@ class Game(tk.Frame):
         self.actualizar_GUI()
         self.game_over()
 
+    # Verificar si hay algún movimiento horizontal posible
+
     def movimiento_horizontal_valido(self):
         for i in range(4):
             for j in range(3):
@@ -185,12 +208,16 @@ class Game(tk.Frame):
                     return True
         return False
 
+    # Verificar si hay algún movimiento vertical posible
+
     def movimiento_vertical_valido(self):
         for i in range(3):
             for j in range(4):
                 if self.matriz[i][j] == self.matriz[i+1][j]:
                     return True
         return False
+
+    # Verificar si es posible seguir jugando        
 
     def game_over(self):
         if any(2048 in row for row in self.matriz):
