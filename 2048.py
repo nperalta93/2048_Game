@@ -1,6 +1,6 @@
 import tkinter as tk
-import Colors as c
 import random
+import Colors as c
 
 class Game(tk.Frame):
     def __init__(self):
@@ -12,15 +12,19 @@ class Game(tk.Frame):
             self, bg=c.GRID_COLOR, bd=3, width=600, height=600
             )
         self.main_grid.grid(pady=(100,0))
-        self.create_GUI()
-        self.start_game()
+        self.crear_GUI()
+        self.iniciar_partida()
+
         self.master.bind("<Left>", self.left)
         self.master.bind("<Right>", self.right)
         self.master.bind("<Up>", self.up)
         self.master.bind("<Down>", self.down)
+
         self.mainloop()
 
-    def create_GUI(self):
+    #
+
+    def crear_GUI(self):
         self.cells = []
         for i in range(4):
             row = []
@@ -48,11 +52,11 @@ class Game(tk.Frame):
         self.score_label = tk.Label(score_frame, text="0", font=c.SCORE_FONT)
         self.score_label.grid(row=1)
 
-    def start_game(self):
-        self.matrix = [[0] * 4 for _ in range (4)]
-        row = random.randint(0,3)
+    def iniciar_partida(self):
+        self.matriz = [[0] * 4 for _ in range (4)]
+        row = random.randint(0, 3)
         col = random.randint(0, 3)
-        self.matrix[row][col] = 2
+        self.matriz[row][col] = 2
         self.cells[row][col]["frame"].configure(bg=c.CELL_COLORS[2])
         self.cells[row][col]["number"].configure(
             bg=c.CELL_COLORS[2],
@@ -60,10 +64,10 @@ class Game(tk.Frame):
             font=c.CELL_NUMBER_FONTS[2],
             text="2"
         )
-        while(self.matrix[row][col] != 0):
-            row = random.randint(0,3)
+        while(self.matriz[row][col] != 0):
+            row = random.randint(0, 3)
             col = random.randint(0, 3)
-        self.matrix[row][col] = 2
+        self.matriz[row][col] = 2
         self.cells[row][col]["frame"].configure(bg=c.CELL_COLORS[2])
         self.cells[row][col]["number"].configure(
             bg=c.CELL_COLORS[2],
@@ -72,54 +76,53 @@ class Game(tk.Frame):
             text="2"
         )
 
-        self.score = 0
+        self.puntaje = 0
     
-    def stack(self):
-        new_matrix = [[0] * 4 for _ in range (4)]
+    def apilar(self):
+        new_matriz = [[0] * 4 for _ in range(4)]
         for i in range(4):
             fill_position = 0
             for j in range (4):
-                if self.matrix[i][j] != 0:
-                    new_matrix[i][fill_position] = self.matrix[i][j]
-                    fill_position+=1
-        self.matrix = new_matrix
+                if self.matriz[i][j] != 0:
+                    new_matriz[i][fill_position] = self.matriz[i][j]
+                    fill_position += 1
+        self.matriz = new_matriz
 
-    def combine(self):
+    def combinar(self):
         for i in range(4):
             for j in range(3):
-                if self.matrix[i][j] != 0 and self.matrix[i][j] == self.matrix[i][j+1]:
-                   self.matrix[i][j] *=2
-                   self.matrix[i][j+1] = 0
-                   self.score += self.matrix[i][j]
+                if self.matriz[i][j] != 0 and self.matriz[i][j] == self.matriz[i][j+1]:
+                   self.matriz[i][j] *=2
+                   self.matriz[i][j+1] = 0
+                   self.puntaje += self.matriz[i][j]
 
-    def reverse(self):
+    def inversa(self):
         new_matrix = []
         for i in range(4):
             new_matrix.append([])
             for j in range(4):
-                new_matrix[i].append(self.matrix[i][3-j])
-        self.matrix = new_matrix
-
-    def transpose(self):
-        new_matrix = [[0] * 4 for _ in range (4)]
+                new_matrix[i].append(self.matriz[i][3 - j])
+        self.matriz = new_matrix
+ 
+    def transpuesta(self):
+        new_matrix = [[0] * 4 for _ in range(4)]
         for i in range(4):
             for j in range(4):
-                new_matrix[i][j] = self.matrix[j][i]
-        self.matrix = new_matrix
+                new_matrix[i][j] = self.matriz[j][i]
+        self.matriz = new_matrix
 
-    def add_number(self):
-        row = random.randint(0,3)
+    def add_numero(self):
+        row = random.randint(0, 3)
         col = random.randint(0, 3)
-        self.matrix[row][col] = 2
-        while(self.matrix[row][col] != 0):
-            row = random.randint(0,3)
+        while(self.matriz[row][col] != 0):
+            row = random.randint(0, 3)
             col = random.randint(0, 3)
-        self.matrix[row][col] = random.choice([2,4])
+        self.matriz[row][col] = random.choice([2,4])
 
-    def update_GUI(self):
+    def actualizar_GUI(self):
         for i in range(4):
             for j in range(4):
-                cell_value = self.matrix[i][j]
+                cell_value = self.matriz[i][j]
                 if cell_value == 0:
                     self.cells[i][j]["frame"].configure(bg=c.EMPTY_CELL_COLOR)
                     self.cells[i][j]["number"].configure(bg=c.EMPTY_CELL_COLOR, text="")
@@ -131,81 +134,81 @@ class Game(tk.Frame):
                         font=c.CELL_NUMBER_FONTS[cell_value],
                         text=str(cell_value)
                     )
-        self.score_label.configure(text=self.score)
+        self.score_label.configure(text=self.puntaje)
         self.update_idletasks()
 
     def left(self, event):
-        self.stack()
-        self.combine()
-        self.stack()
-        self.add_number()
-        self.update_GUI()
+        self.apilar()
+        self.combinar()
+        self.apilar()
+        self.add_numero()
+        self.actualizar_GUI()
         self.game_over()
 
 
     def right(self, event):
-        self.reverse()
-        self.stack()
-        self.combine()
-        self.stack()
-        self.reverse()
-        self.add_number()
-        self.update_GUI()
+        self.inversa()
+        self.apilar()
+        self.combinar()
+        self.apilar()
+        self.inversa()
+        self.add_numero()
+        self.actualizar_GUI()
         self.game_over()
 
     def up(self, event):
-        self.transpose()
-        self.stack()
-        self.combine()
-        self.stack()
-        self.transpose()
-        self.add_number()
-        self.update_GUI()
+        self.transpuesta()
+        self.apilar()
+        self.combinar()
+        self.apilar()
+        self.transpuesta()
+        self.add_numero()
+        self.actualizar_GUI()
         self.game_over()
 
     def down(self, event):
-        self.transpose()
-        self.reverse()
-        self.stack()
-        self.combine()
-        self.stack()
-        self.reverse()
-        self.transpose()
-        self.add_number()
-        self.update_GUI()
+        self.transpuesta()
+        self.inversa()
+        self.apilar()
+        self.combinar()
+        self.apilar()
+        self.inversa()
+        self.transpuesta()
+        self.add_numero()
+        self.actualizar_GUI()
         self.game_over()
 
-    def horizontal_move_valid(self):
+    def movimiento_horizontal_valido(self):
         for i in range(4):
             for j in range(3):
-                if self.matrix[i][j] == self.matrix[i][j+1]:
+                if self.matriz[i][j] == self.matriz[i][j+1]:
                     return True
         return False
 
-    def vertical_move_valid(self):
+    def movimiento_vertical_valido(self):
         for i in range(3):
             for j in range(4):
-                if self.matrix[i][j] == self.matrix[i+1][j]:
+                if self.matriz[i][j] == self.matriz[i+1][j]:
                     return True
         return False
 
     def game_over(self):
-        if any(2048 in row for row in self.matrix):
+        if any(2048 in row for row in self.matriz):
            game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
            game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
            tk.Label(
                game_over_frame,
-               text="¡Win!",
+               text="¡Ganó!",
                bg=c.WINNER_BG,
                fg=c.GAME_OVER_FONT_COLOR,
                font=c.GAME_OVER_FONT
            ).pack()
-        elif not any(0 in row for row in self.matrix) and not self.horizontal_move_valid() and not self.vertical_move_valid():
+        elif not any(0 in row for row in self.matriz) and not self.movimiento_horizontal_valido() and not self.movimiento_vertical_valido():
             game_over_frame = tk.Frame(self.main_grid, borderwidth=2)
             game_over_frame.place(relx=0.5, rely=0.5, anchor="center")
             tk.Label(
                 game_over_frame,
-                text="¡Loser!",
+                text="¡Perdió!",
                 bg=c.LOSER_BG,
                 fg=c.GAME_OVER_FONT_COLOR,
                 font=c.GAME_OVER_FONT
@@ -216,4 +219,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

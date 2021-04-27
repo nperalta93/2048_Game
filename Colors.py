@@ -1,4 +1,4 @@
-#Color palette took from GitHub Repository kiteco/python-youtube-code
+#Color palette del repositorio de GitHub kiteco/python-youtube-code
 
 GRID_COLOR = "#a39489"
 EMPTY_CELL_COLOR = "#c2b3a9"
